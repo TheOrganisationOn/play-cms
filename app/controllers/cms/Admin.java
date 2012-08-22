@@ -52,6 +52,9 @@ public class Admin extends Controller {
 	public static void savePage(@Valid CMSPage page, boolean active) throws Throwable {
 		if (!Profiler.canEdit(page.name))
 			forbidden();
+
+		if (request.params.get("cancelEdit") != null)
+			index();
 		page.active = active;
 		if (request.params.get("delete") != null) {
 			page.delete();
