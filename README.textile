@@ -8,6 +8,13 @@ Ever had the requirement to quickly do a simple textual change to one of the sta
 
 To dig deeper into this module,  take a look at documentation/manual/home.textile.
 
+h1. Origins of module
+
+Originally module was created by joergviola (https://github.com/joergviola/play-cms)
+Some useful changes applied by codeborne: https://github.com/codeborne/play-cms
+
+This repository is fork from codeborne version with additional improvements.
+
 h1. Quickstart
 
 Add the dependency in dependency.yml

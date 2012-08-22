@@ -42,3 +42,11 @@ bc. <div id="footer">
 After having rendered the changed template once, there exists a CMS page 'footer'. Since this page is not active, you will not notice any differences in your app - yet! But if you start editing the new page and activate it, its content will be displayed instead of the content from your template.
 
 Simple remove the page or inactivate it to re-establish the old content.
+
+You can also use "displayText" tag to display only template context without edit button. It can be useful for templating
+ input labels.
+
+bc.<input id="form-button" type="submit" value="#{cms.displayText 'signUpText'/}" />
+   #{cms.edit 'signUpText'/}
+
+Edit button for displayText can be displayed in convenient place using cms.edit tag with same parameter as in "displayText"
