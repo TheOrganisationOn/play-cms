@@ -19,7 +19,11 @@ tinyMCE.init({
     theme_advanced_resizing : true,
     external_image_list_url : "imagelist.js",
     extended_valid_elements : "object[width|height|classid|codebase],param[name|value],embed[src|type|width|height|flashvars|wmode]",
-    convert_urls : false
+    convert_urls : false,
+    *{these forces makes possible to enter a text without wrapping it in <p> by default - needed for editing buttons labels etc.}*
+    forced_root_block : false,
+    force_br_newlines : true,
+    force_p_newlines : false
 });
 </script >
 </head>
