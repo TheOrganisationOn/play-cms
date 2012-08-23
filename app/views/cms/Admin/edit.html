@@ -32,7 +32,7 @@ tinyMCE.init({
 <table>
 	<tr valign="top">
 		<td>Name:</td>
-		<td><input type="text" size="20" name="page.name" value="${page.name}"></td>
+		<td><input type="text" size="20" #{if page.name}readonly="readonly"#{/if} name="page.name" value="${page.name}"></td>
 	</tr>
 	<tr valign="top">
 		<td>Title:</td>
