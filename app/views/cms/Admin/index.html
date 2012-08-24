@@ -1,23 +1,37 @@
 #{extends 'cms/cms.html' /}
 
-<table class="table" cellspacing="5">
-	<tr>
-		<td width="7%">Active    </td>
-		<td>URL       </td>
-		<td width="25%">Title     </td>
-		<td>Content     </td>
-	</tr>
-#{list items:pages, as:'page' }
-	<tr>
-        <td>${page.active}</td>
-        <td><a href="@{cms.Admin.editPage(null, page.name)}">${page.name}</a></td>
-		<td>${page.title}</td>
-		<td>${page.getBodyPreview().raw()}</td>
-	</tr>
-#{/list}
-</table>
 
 <a href="@{cms.Admin.addPage()}">New Page</a><br/>
 
-${pages.size()} Pages found.
+
+<table id="templates">
+    <thead>
+    <tr>
+        <th>active</th>
+        <th>name</th>
+        <th>title</th>
+        <th>body</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.1/jquery.dataTables.js"></script>
+<script>
+
+    function templateData(o) {
+        return {
+            active: o.aData[0],
+            name: o.aData[1],
+            title: o.aData[2],
+            body: o.aData[3]}
+    }
+    $(function() {
+
+        oTable = $('#templates').dataTable({
+            "sAjaxSource": "@{cms.Admin.templatesJson()}"
+        } );
+    });
+</script>
 

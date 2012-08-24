@@ -1,5 +1,8 @@
 package controllers.cms;
 
+
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -99,6 +102,30 @@ public class Admin extends Controller {
 			forbidden();
 		List<CMSImage> images = CMSImage.findAll();
 		render(images);
+	}
+
+	public static void templatesJson() {
+		DataTablesJsonData dataTablesJsonData = new Admin.DataTablesJsonData();
+		List<CMSPage> pages = CMSPage.all().fetch();
+		for (CMSPage page : pages) {
+			dataTablesJsonData
+					.add(newArrayList(
+							(page.active)?"active":"inactive",
+							page.name,
+							page.title,
+							page.getBodyPreview()
+
+					));
+		}
+		renderJSON(dataTablesJsonData);
+	}
+
+	public static class DataTablesJsonData {
+		public List<List<String>> aaData = newArrayList();
+
+		public void add(List<String> list) {
+			aaData.add(list);
+		}
 	}
 
 }
