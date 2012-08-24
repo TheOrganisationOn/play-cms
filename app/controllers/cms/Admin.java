@@ -104,22 +104,6 @@ public class Admin extends Controller {
 		render(images);
 	}
 
-	public static void templatesJson() {
-		DataTablesJsonData dataTablesJsonData = new Admin.DataTablesJsonData();
-		List<CMSPage> pages = CMSPage.all().fetch();
-		for (CMSPage page : pages) {
-			dataTablesJsonData
-					.add(newArrayList(
-							(page.active)?"active":"inactive",
-							page.name,
-							page.title,
-							page.getBodyPreview()
-
-					));
-		}
-		renderJSON(dataTablesJsonData);
-	}
-
 	public static class DataTablesJsonData {
 		public List<List<String>> aaData = newArrayList();
 
