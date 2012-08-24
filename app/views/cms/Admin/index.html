@@ -5,7 +5,6 @@
 		<td width="7%">Active    </td>
 		<td>URL       </td>
 		<td width="25%">Title     </td>
-		<td>Preview     </td>
 		<td>Content     </td>
 	</tr>
 #{list items:pages, as:'page' }
@@ -13,7 +12,6 @@
         <td>${page.active}</td>
         <td><a href="@{cms.Admin.editPage(null, page.name)}">${page.name}</a></td>
 		<td>${page.title}</td>
-		<td><a href="@{cms.Frontend.show(null, page.name)}" >preview</a></td>
 		<td>${page.getBodyPreview().raw()}</td>
 	</tr>
 #{/list}
@@ -22,3 +20,4 @@
 <a href="@{cms.Admin.addPage()}">New Page</a><br/>
 
 ${pages.size()} Pages found.
+
