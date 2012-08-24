@@ -14,6 +14,9 @@ import play.db.jpa.GenericModel;
 
 @Entity
 public class CMSPage extends GenericModel {
+
+	private static final int PREVIEW_SIZE = 100;
+
 	@Required
 	@Id
 	public String name;
@@ -31,5 +34,9 @@ public class CMSPage extends GenericModel {
 	public static List<CMSPage> findByTag(String tag) {
 		return CMSPage.find("tags like ? order by sort", "%" + tag + "%")
 				.fetch();
+	}
+
+	public String getBodyPreview() {
+		return body.substring(0,(body.length() < PREVIEW_SIZE) ? body.length() : PREVIEW_SIZE) ;
 	}
 }

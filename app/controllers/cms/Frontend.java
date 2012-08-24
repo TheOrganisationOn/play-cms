@@ -7,7 +7,7 @@ import play.mvc.Controller;
 public class Frontend extends Controller {
 	public static void show(String template, String pageName) throws Throwable {
 		CMSPage page = CMSPage.findById(pageName);
-		if (page == null || !page.active) {
+		if (page == null ) {
 			if (Profiler.canEdit(pageName))
 				Admin.editPage(null, pageName);
 			else
