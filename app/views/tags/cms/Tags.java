@@ -1,5 +1,6 @@
 package views.tags.cms;
 
+import controllers.cms.Admin;
 import groovy.lang.Closure;
 
 import java.io.PrintWriter;
@@ -9,7 +10,9 @@ import java.util.Map;
 import controllers.cms.Profiler;
 
 import models.cms.CMSPage;
+import play.mvc.Http;
 import play.mvc.Router;
+import play.mvc.Scope;
 import play.templates.FastTags;
 import play.templates.GroovyTemplate;
 import play.templates.GroovyTemplate.ExecutableTemplate;
@@ -49,7 +52,13 @@ public class Tags extends FastTags {
 	}
 
 	private static void displayEditButton(PrintWriter out, CMSPage page) throws Throwable {
+
+		addReferrerToCurrentPage();
 		edit(out, page.name);
+	}
+
+	private static void addReferrerToCurrentPage() {
+		Scope.Session.current.get().put(Admin.REFERRER_PARAM, Http.Request.current.get().url);
 	}
 
 	private static CMSPage displayCmsPage(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template) {
@@ -76,6 +85,7 @@ public class Tags extends FastTags {
 
 
 	private static void edit(PrintWriter out, String name) throws Throwable {
+
 		if (!Profiler.canEdit(name))
 			return;
 		HashMap<String, Object> args = new HashMap<String, Object>();

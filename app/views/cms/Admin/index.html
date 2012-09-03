@@ -1,22 +1,59 @@
 #{extends 'cms/cms.html' /}
 
-<table class="table">
-	<tr>
-		<td>Sort order</td>
-		<td>URL</td>
-		<td>Tags</td>
-		<td>Title</td>
-	</tr>
-#{list items:pages, as:'page' }
-	<tr>
-		<td>${page.sort}</td>
-		<td><a href="@{cms.Admin.editPage(null, page.name)}">${page.name}</a></td>
-		<td>${page.tags}</td>
-		<td>${page.title}</td>
-	</tr>
-#{/list}
-</table>
 
 <a href="@{cms.Admin.addPage()}">New Page</a><br/>
 
-${pages.size()} Pages found.
+
+<table id="templates">
+    <thead>
+    <tr>
+        <th>active</th>
+        <th>name</th>
+        <th>title</th>
+        <th>body</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.1/jquery.dataTables.js"></script>
+<script>
+
+    function templateData(o) {
+        return {
+            active:o.aData[0],
+            name:o.aData[1],
+            title:o.aData[2],
+            body:o.aData[3]}
+    }
+    $(function () {
+
+        oTable = $('#templates').dataTable({
+            "sAjaxSource":"@{cms.Admin.templatesJson()}",
+            "aoColumnDefs":[
+                {
+                    "aTargets":[ 0 ],
+                    "sWidth": "5%"
+                },
+                {
+                    "aTargets":[ 1 ],
+                    "sWidth": "20%",
+                    "fnRender":function (o, val) {
+
+                        return Mustache.render('<a href="/cms.admin/editpage?pageName={{name}}">{{name}}</a>', templateData(o));
+                    }
+                },
+                {
+                    "aTargets":[ 2 ],
+                    "sWidth": "20%"
+                },
+                {
+                    "aTargets":[ 3 ],
+                    "sWidth": "55%"
+                }
+
+            ]
+        });
+    });
+</script>

@@ -1,26 +1,24 @@
 package controllers.cms;
 
+
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import jj.play.org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
-import jj.play.org.eclipse.mylyn.wikitext.textile.core.TextileLanguage;
-
 import models.cms.CMSImage;
 import models.cms.CMSPage;
-
 import org.apache.commons.lang.StringUtils;
-
 import play.data.validation.Valid;
 import play.db.jpa.Blob;
-import play.db.jpa.JPABase;
 import play.libs.MimeTypes;
 import play.mvc.Controller;
-import play.mvc.With;
 
 public class Admin extends Controller {
+
+	public static final String REFERRER_PARAM = "referrer";
 
 	public static void index() {
 		if (!Profiler.canEnter())
@@ -33,7 +31,7 @@ public class Admin extends Controller {
 		if (!Profiler.canEdit(pageName))
 			forbidden();
 		CMSPage page = CMSPage.findById(pageName);
-		if (page==null) {
+		if (page == null) {
 			page = new CMSPage();
 			page.name = pageName;
 			page.active = true;
@@ -53,16 +51,26 @@ public class Admin extends Controller {
 		if (!Profiler.canEdit(page.name))
 			forbidden();
 
-		if (request.params.get("cancelEdit") != null)
-			index();
+		if (request.params.get("cancelEdit") != null) {
+			if (session.get(REFERRER_PARAM) != null) {
+				redirect(session.get(REFERRER_PARAM));
+			} else {
+				index();
+			}
+		}
 		page.active = active;
 		if (request.params.get("delete") != null) {
 			page.delete();
 			index();
 		}
 		page.save();
-		if (request.params.get("savePage") != null)
-			Frontend.show(null, page.name);
+		if (request.params.get("savePage") != null) {
+			if (session.get(REFERRER_PARAM) != null) {
+				redirect(session.get(REFERRER_PARAM));
+			} else {
+				Frontend.show(null, page.name);
+			}
+		}
 		index();
 	}
 
@@ -70,7 +78,7 @@ public class Admin extends Controller {
 		if (!Profiler.canEnter())
 			forbidden();
 		CMSImage image = CMSImage.findById(data.getName());
-		if (image==null) {
+		if (image == null) {
 			image = new CMSImage();
 			image.name = data.getName();
 		}
@@ -86,7 +94,7 @@ public class Admin extends Controller {
 			e.printStackTrace();
 		}
 		image.save();
-		redirect("/public/tiny_mce/plugins/advimage/image.htm?"+image.name);
+		redirect("/public/tiny_mce/plugins/advimage/image.htm?" + image.name);
 	}
 
 	public static void imagelist() {
@@ -95,5 +103,29 @@ public class Admin extends Controller {
 		List<CMSImage> images = CMSImage.findAll();
 		render(images);
 	}
-	
+
+	public static void templatesJson() {
+		DataTablesJsonData dataTablesJsonData = new Admin.DataTablesJsonData();
+		List<CMSPage> pages = CMSPage.all().fetch();
+		for (CMSPage page : pages) {
+			dataTablesJsonData
+					.add(newArrayList(
+							(page.active)?"active":"inactive",
+							page.name,
+							page.title,
+							page.getBodyPreview()
+
+					));
+		}
+		renderJSON(dataTablesJsonData);
+	}
+
+	public static class DataTablesJsonData {
+		public List<List<String>> aaData = newArrayList();
+
+		public void add(List<String> list) {
+			aaData.add(list);
+		}
+	}
+
 }
