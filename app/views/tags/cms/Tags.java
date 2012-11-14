@@ -1,29 +1,30 @@
 package views.tags.cms;
 
-import controllers.cms.Admin;
+import static org.apache.commons.lang.StringUtils.*;
 import groovy.lang.Closure;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import controllers.cms.Profiler;
-
 import models.cms.CMSPage;
+
+import org.apache.commons.lang.StringUtils;
+
 import play.mvc.Http;
 import play.mvc.Router;
 import play.mvc.Scope;
 import play.templates.FastTags;
-import play.templates.GroovyTemplate;
 import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.JavaExtensions;
+import controllers.cms.Admin;
+import controllers.cms.Profiler;
 
 @FastTags.Namespace("cms")
 public class Tags extends FastTags {
 
 	/**
-	 * Displays page from CMS by name given by argument.
-	 * Displays edit button for this page at bottom.
+	 * Displays page from CMS by name given by argument. Displays edit button for this page at bottom.
 	 */
 	public static void _display(Map<?, ?> args, Closure body, PrintWriter out,
 			ExecutableTemplate template, int fromLine) throws Throwable {
@@ -78,16 +79,25 @@ public class Tags extends FastTags {
 		} else if (!page.active) {
 			out.print(safeBody);
 		} else if (page.body != null) {
-			out.print(page.body);
+			out.print(getBodyWithoutHtmlParagraph(page.body));
 		}
 		return page;
 	}
 
+	private static String getBodyWithoutHtmlParagraph(String body) {
+		if (StringUtils.isBlank(body)) {
+			return body;
+		} else {
+			String trimmed = body.trim();
+			return removeEnd(removeStart(trimmed, "<p>"), "</p>");
+		}
+	}
 
 	private static void edit(PrintWriter out, String name) throws Throwable {
 
-		if (!Profiler.canEdit(name))
+		if (!Profiler.canEdit(name)) {
 			return;
+		}
 		HashMap<String, Object> args = new HashMap<String, Object>();
 		args.put("pageName", name);
 		out.print("<a class=\"cms-edit\" href=\"" + Router.reverse("cms.Admin.editPage", args) + "\">");
