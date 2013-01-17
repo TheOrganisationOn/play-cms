@@ -1,6 +1,7 @@
 package views.tags.cms;
 
 import static org.apache.commons.lang.StringUtils.*;
+import static org.jsoup.Jsoup.*;
 import groovy.lang.Closure;
 
 import java.io.PrintWriter;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import models.cms.CMSPage;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import play.mvc.Http;
@@ -64,6 +66,7 @@ public class Tags extends FastTags {
 
 	private static CMSPage displayCmsPage(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template) {
 		String pageName = (String) args.get("arg");
+		Boolean stripHtml = (Boolean) args.get("stripHtml");
 		CMSPage page = CMSPage.findById(pageName);
 
 		String safeBody = body != null ? JavaExtensions.toString(body) : "";
@@ -75,13 +78,20 @@ public class Tags extends FastTags {
 			page.body = safeBody;
 			page.active = false;
 			page.save();
-			out.print(safeBody);
+			print(out, safeBody, stripHtml);
 		} else if (!page.active) {
-			out.print(safeBody);
+			print(out, safeBody, stripHtml);
 		} else if (page.body != null) {
-			out.print(getBodyWithoutHtmlParagraph(page.body));
+			print(out, getBodyWithoutHtmlParagraph(page.body), stripHtml);
 		}
 		return page;
+	}
+
+	private static void print(PrintWriter out, String body, Boolean stripHtml) {
+		if (BooleanUtils.isTrue(stripHtml)) {
+			body = parse(body).text();
+		}
+		out.print(body);
 	}
 
 	private static String getBodyWithoutHtmlParagraph(String body) {
