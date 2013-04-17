@@ -13,9 +13,12 @@ import models.cms.CMSPage;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import play.Logger;
 import play.mvc.Http;
+import play.mvc.Http.Request;
 import play.mvc.Router;
 import play.mvc.Scope;
+import play.mvc.Scope.Session;
 import play.templates.FastTags;
 import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.JavaExtensions;
@@ -61,7 +64,13 @@ public class Tags extends FastTags {
 	}
 
 	private static void addReferrerToCurrentPage() {
-		Scope.Session.current.get().put(Admin.REFERRER_PARAM, Http.Request.current.get().url);
+		Session session = Scope.Session.current.get();
+		Request request = Http.Request.current.get();
+		if (session != null && request != null) {
+			session.put(Admin.REFERRER_PARAM, request.url);
+		} else {
+			Logger.error("no session or request when trying to set referrer : %s , %s", session, request);
+		}
 	}
 
 	private static CMSPage displayCmsPage(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template) {
