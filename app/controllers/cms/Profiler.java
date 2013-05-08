@@ -3,17 +3,18 @@ package controllers.cms;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import controllers.Secure.Security;
-
 import play.Logger;
 import play.Play;
 import play.mvc.Scope.Session;
 import play.utils.Java;
+import controllers.Secure.Security;
 
 public class Profiler {
-	public static boolean canEdit(String pageName)  {
-		if (Session.current().get("username")==null)
+
+	public static boolean canEdit(String pageName) {
+		if (getCurrentUsername() == null) {
 			return false;
+		}
 		String profile = Play.configuration.getProperty("cms.profile", "admin");
 		boolean result;
 		try {
@@ -24,9 +25,15 @@ public class Profiler {
 			return false;
 		}
 	}
-	public static boolean canEnter()  {
-		if (Session.current().get("username")==null)
+
+	private static String getCurrentUsername() {
+		return Session.current() == null ? "" : Session.current().get("username");
+	}
+
+	public static boolean canEnter() {
+		if (getCurrentUsername() == null) {
 			return false;
+		}
 		String profile = Play.configuration.getProperty("cms.profile", "admin");
 		boolean result;
 		try {
@@ -37,7 +44,7 @@ public class Profiler {
 			return false;
 		}
 	}
-	
+
 	private static Object invoke(Class<?> original, String m, Object... args) throws Throwable {
 		Class called = null;
 		List<Class> classes = Play.classloader
@@ -53,5 +60,5 @@ public class Profiler {
 			throw e.getTargetException();
 		}
 	}
-	
+
 }
